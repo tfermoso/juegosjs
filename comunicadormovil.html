@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicador Voz ↔ Texto</title>
+<style>
+  :root {
+    --fondo: #0d1117;
+    --panel: #161b22;
+    --borde: #58a6ff;
+    --texto: #f0f6fc;
+    --boton-verde: #2ea043;
+    --boton-rojo: #da3633;
+  }
+  body {
+    font-family: "Arial", sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    margin: 0;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: var(--borde);
+    font-size: 1.4rem;
+  }
+  .panel {
+    width: 100%;
+    max-width: 480px;
+    border: 2px solid var(--borde);
+    background: var(--panel);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 10px var(--borde);
+  }
+  .panel h2 {
+    font-size: 1.1rem;
+    color: var(--borde);
+  }
+  button {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    color: white;
+  }
+  #btnEscuchar { background: var(--boton-verde); }
+  #btnEscuchar.stop { background: var(--boton-rojo); }
+  #btnLeer { background: var(--borde); color: #000; }
+  #textoReconocido {
+    min-height: 100px;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 10px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    margin-top: 15px;
+  }
+  textarea {
+    width: 100%;
+    height: 100px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: 1px solid #30363d;
+    padding: 10px;
+    background: #0d1117;
+    color: var(--texto);
+  }
+  canvas {
+    width: 100%;
+    height: 60px;
+    background: #111;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+  @media (min-width: 600px) {
+    h1 { font-size: 1.8rem; }
+    button { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+  <h1>Comunicador Voz ↔ Texto</h1>
+
+  <div class="panel">
+    <h2>🗣️ Escuchar y mostrar texto</h2>
+    <canvas id="visualizador"></canvas>
+    <button id="btnEscuchar">🎤 Iniciar escucha</button>
+    <div id="textoReconocido">Aquí aparecerá el texto transcrito...</div>
+  </div>
+
+  <div class="panel">
+    <h2>💬 Escribir y pronunciar</h2>
+    <textarea id="textoParaLeer" placeholder="Escribe aquí para pronunciar..."></textarea>
+    <button id="btnLeer">🔊 Leer en voz alta</button>
+  </div>
+
+<script>
+/* ==== VISUALIZADOR DE SONIDO ==== */
+let audioContext, analyser, dataArray, source;
+const canvas = document.getElementById("visualizador");
+const ctx = canvas.getContext("2d");
+
+async function iniciarVisualizador() {
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  source = audioContext.createMediaStreamSource(stream);
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 128;
+  const bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+  source.connect(analyser);
+  dibujarVisualizador();
+}
+
+function dibujarVisualizador() {
+  requestAnimationFrame(dibujarVisualizador);
+  if (!analyser) return;
+  analyser.getByteFrequencyData(dataArray);
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const barWidth = (canvas.width / dataArray.length) * 1.5;
+  let x = 0;
+  for (let i = 0; i < dataArray.length; i++) {
+    const barHeight = dataArray[i] / 2;
+    ctx.fillStyle = `hsl(${barHeight + 180}, 100%, 60%)`;
+    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+    x += barWidth + 1;
+  }
+}
+
+/* ==== RECONOCIMIENTO DE VOZ ==== */
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = "es-ES";
+recognition.continuous = true;
+recognition.interimResults = true;
+
+const btnEscuchar = document.getElementById("btnEscuchar");
+const textoReconocido = document.getElementById("textoReconocido");
+let escuchando = false;
+
+btnEscuchar.addEventListener("click", () => {
+  if (!escuchando) {
+    recognition.start();
+    iniciarVisualizador();
+    escuchando = true;
+    btnEscuchar.textContent = "🛑 Detener escucha";
+    btnEscuchar.classList.add("stop");
+  } else {
+    recognition.stop();
+    escuchando = false;
+    btnEscuchar.textContent = "🎤 Iniciar escucha";
+    btnEscuchar.classList.remove("stop");
+    if (audioContext) audioContext.close();
+  }
+});
+
+recognition.onresult = (event) => {
+  let texto = "";
+  for (let i = event.resultIndex; i < event.results.length; ++i) {
+    texto += event.results[i][0].transcript;
+  }
+  textoReconocido.textContent = texto;
+};
+
+recognition.onerror = (e) => {
+  textoReconocido.textContent = "Error: " + e.error;
+};
+
+/* ==== TEXTO A VOZ ==== */
+document.getElementById("btnLeer").addEventListener("click", () => {
+  const texto = document.getElementById("textoParaLeer").value;
+  if (!texto.trim()) return;
+  const mensaje = new SpeechSynthesisUtterance(texto);
+  mensaje.lang = "es-ES";
+  mensaje.rate = 1;
+  mensaje.pitch = 1;
+  speechSynthesis.speak(mensaje);
+});
+</script>
+</body>
+</html>

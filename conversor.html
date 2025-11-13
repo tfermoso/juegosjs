@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor € ↔ $</title>
+    <link rel="stylesheet" href="css/conversor.css">
+</head>
+
+<body>
+    <header>
+        <h1>🎯 Adivina el Número</h1>
+        <a href="index.html" class="volver">🔙 Volver al Arcade</a>
+    </header>
+    <div class="container">
+        <h1>Conversor de Moneda</h1>
+        <h2>€ ↔ $</h2>
+
+        <div class="converter">
+            <label for="amount">Cantidad:</label>
+            <input type="number" id="amount" placeholder="Introduce cantidad" step="0.01">
+
+            <div class="options">
+                <label><input type="radio" name="direction" value="eurusd" checked> Euros → Dólares</label>
+                <label><input type="radio" name="direction" value="usdeur"> Dólares → Euros</label>
+            </div>
+
+            <button id="convertBtn">Convertir</button>
+
+            <p id="result"></p>
+        </div>
+
+        <footer>
+            <p>Tasas aproximadas. Conversor de práctica JS 💻</p>
+        </footer>
+    </div>
+
+    <script src="js/conversor.js"></script>
+</body>
+
+</html>
