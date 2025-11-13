@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎯 Adivina el número</title>
+  <link rel="stylesheet" href="css/adivina.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>🎯 Adivina el Número</h1>
+    <a href="index.html" class="volver">🔙 Volver al Arcade</a>
+  </header>
+
+  <main>
+    <section class="contenedor">
+      <p class="instrucciones">
+        He pensado un número entre <strong>1</strong> y <strong>100</strong>.<br>
+        ¡Tienes <strong>10 intentos</strong> para adivinarlo!
+      </p>
+
+      <div class="juego">
+        <input type="number" id="entrada" placeholder="Tu número..." min="1" max="100">
+        <button id="botonIntento">Probar suerte</button>
+      </div>
+
+      <p id="mensaje" class="mensaje"></p>
+      <p id="intentosRestantes" class="intentos">Intentos restantes: 10</p>
+
+      <button id="reiniciar" class="reiniciar oculto">Jugar de nuevo</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Retro Arcade – Juego del Número Secreto</p>
+  </footer>
+
+  <script src="js/adivina.js"></script>
+</body>
+</html>

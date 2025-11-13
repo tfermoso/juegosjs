@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piedra, Papel o Tijera</title>
+    <link rel="stylesheet" href="css/piedrapapeltijera.css">
+
+</head>
+
+<body>
+    <header>
+        <h1>Piedra, Papel o Tijera</h1>
+        <a href="index.html" class="volver">🔙 Volver al Arcade</a>
+    </header>
+    <div class="container">
+
+        <div class="game">
+            <div class="player">
+                <h2>Tú</h2>
+                <img id="playerImg" src="img/piedra.png" alt="Tu elección">
+                <div class="controls">
+                    <button id="btnPiedra">Piedra 🪨</button>
+                    <button id="btnPapel">Papel 📄</button>
+                    <button id="btnTijera">Tijera ✂️</button>
+                </div>
+            </div>
+
+            <div class="versus">VS</div>
+
+            <div class="cpu">
+                <h2>Máquina</h2>
+                <img id="cpuImg" src="img/papel.png" alt="Opción CPU">
+            </div>
+        </div>
+
+
+
+        <div class="score">
+            <p>🏆 Tú: <span id="playerScore">0</span></p>
+            <p>🤖 Máquina: <span id="cpuScore">0</span></p>
+        </div>
+
+        <p id="resultMsg"></p>
+    </div>
+
+    <script src="js/piedrapapeltijera.js"></script>
+</body>
+
+</html>
